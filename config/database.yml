@@ -1,0 +1,5 @@
+host: 'localhost'
+adapter: 'postgresql'
+database: 'z_AR_NO_RAILS'
+username: 'rey'
+password: 'REY_DATABASE_PASSWORD'
