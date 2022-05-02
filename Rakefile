@@ -1,19 +1,19 @@
 require 'active_record'
 require 'yaml'
+require 'pry-byebug'
+
+databases = ActiveRecord::Tasks::DatabaseTasks.setup_initial_database_yaml
 
 namespace :db do
 
     desc "Create the db"
     task :create do
-        task all: :load_config do
-            ActiveRecord::Tasks::DatabaseTasks.create_all                   # C2 
-        end
-        # puts "just creating ..."
-        # connection_details = YAML::load(File.open('config/database.yml'))
-        # admin_connection = connection_details.merge({'database'=> 'postgres','schema_search_path'=> 'public'})
-        # puts admin_connection
-        # ActiveRecord::Base.establish_connection(admin_connection)
-        # ActiveRecord::Base.connection.create_database(connection_details.fetch('database'))
+        puts "just creating ..."
+        connection_details = YAML::load(File.open('config/database.yml'))
+        admin_connection = connection_details.merge({'database'=> 'postgres','schema_search_path'=> 'public'})
+        puts admin_connection
+        ActiveRecord::Base.establish_connection(admin_connection)
+        ActiveRecord::Base.connection.create_database(connection_details.fetch('database'))
     end
 
     desc "Migrating the db"
@@ -28,20 +28,11 @@ namespace :db do
 
     desc 'Display status of migration'
     task :status  do
-        puts "status ..."
-        for x in ActiveRecord::Base.connection.tables
-            puts x
-        end
+        # puts "status ..."
+        # for x in ActiveRecord::Base.connection.tables
+        #     puts x
+        # end
         
     end
     
-    task load_config: :environment do
-        if ActiveRecord::Base.configurations.empty?
-          ActiveRecord::Base.configurations = ActiveRecord::Tasks::DatabaseTasks.database_configuration
-        end
-    
-        ActiveRecord::Migrator.migrations_paths = ActiveRecord::Tasks::DatabaseTasks.migrations_paths
-      end
-
-
 end
