@@ -26,8 +26,9 @@ namespace :db do
     desc 'Display status of migration'
     task :status  do
         puts "status ..."
-        p=ActiveRecord::SchemaMigration.table_name
-        puts p
+        for x in ActiveRecord::Base.connection.tables
+            puts x
+        end
         
     end
 
