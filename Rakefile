@@ -5,12 +5,15 @@ namespace :db do
 
     desc "Create the db"
     task :create do
-        puts "just creating ..."
-        connection_details = YAML::load(File.open('config/database.yml'))
-        admin_connection = connection_details.merge({'database'=> 'postgres','schema_search_path'=> 'public'})
-        puts admin_connection
-        ActiveRecord::Base.establish_connection(admin_connection)
-        ActiveRecord::Base.connection.create_database(connection_details.fetch('database'))
+        task all: :load_config do
+            ActiveRecord::Tasks::DatabaseTasks.create_all                   # C2 
+        end
+        # puts "just creating ..."
+        # connection_details = YAML::load(File.open('config/database.yml'))
+        # admin_connection = connection_details.merge({'database'=> 'postgres','schema_search_path'=> 'public'})
+        # puts admin_connection
+        # ActiveRecord::Base.establish_connection(admin_connection)
+        # ActiveRecord::Base.connection.create_database(connection_details.fetch('database'))
     end
 
     desc "Migrating the db"
@@ -31,6 +34,14 @@ namespace :db do
         end
         
     end
+    
+    task load_config: :environment do
+        if ActiveRecord::Base.configurations.empty?
+          ActiveRecord::Base.configurations = ActiveRecord::Tasks::DatabaseTasks.database_configuration
+        end
+    
+        ActiveRecord::Migrator.migrations_paths = ActiveRecord::Tasks::DatabaseTasks.migrations_paths
+      end
 
 
 end
